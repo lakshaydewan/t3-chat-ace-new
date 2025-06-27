@@ -32,6 +32,7 @@ import { createNewChat } from "@/app/actions/actions"
 import { redirect, useRouter } from "next/navigation"
 import { useChatStore } from "@/store/chatStore"
 import { set } from "react-hook-form"
+import { Chat } from "@/lib/generated/prisma"
 
 const sampleQuestions = [
   "How does AI work?",
@@ -54,11 +55,26 @@ interface Message {
   timestamp: Date
 }
 
-function Sidebar({ loadingState }: { loadingState: boolean }) {
+function Sidebar({loadingState}: {loadingState: boolean}) {
 
   const { data } = useSession();
   console.log(data);
   const { chats } = useChatStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredChats, setFilteredChats] = useState<Chat[]>(chats);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredChats(chats)
+      return
+    }
+    const filteredChats = chats.filter((chat) => {
+      return chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+    })
+    setFilteredChats(filteredChats)
+    console.log(filteredChats)
+
+  }, [searchTerm, chats])
 
   return (
     <div className="h-full bg-[#f3e5f5] font-sans dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 flex flex-col border-r border-purple-100 dark:border-gray-700">
@@ -95,6 +111,8 @@ function Sidebar({ loadingState }: { loadingState: boolean }) {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#d589b4] w-4 h-4" />
         <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search your threads..."
           className="w-full pl-10 pr-4 py-2.5 ring-0 tracking-wide outline-none bg-transparent placeholder:text-[#d589b4] dark:bg-gray-800/60 border-b border-b-[#efbdeb] dark:border-b-gray-600 text-gray-700 dark:text-gray-200 text-xs"
         />
@@ -103,18 +121,19 @@ function Sidebar({ loadingState }: { loadingState: boolean }) {
       {/* Spacer */}
       <div className="flex-1">
         <span className="text-xs text-[#4f1754] font-sans font-semibold">Chats</span>
+
         {
           loadingState && <div className="animate-pulse bg-[#b7387d]/30 font-sans px-2 py-4 rounded-md my-2">
-          </div>
+            </div>
         }
         {
-          !loadingState && ((chats.length > 0) ? chats.map((chat) => {
+          !loadingState && ((filteredChats.length > 0) ? filteredChats.map((chat) => {
             return (
               <div key={chat.id}>
                 <ChatCard chat={chat} />
               </div>
             )
-          }) :
+          }) : 
             <div className="text-center text-sm font-sans px-2 py-2 rounded-md">
               No chats yet
             </div>)
@@ -265,7 +284,7 @@ export default function ChatPage() {
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent side="left" className="p-0 w-64">
-          <Sidebar loadingState={isLoading} />
+          <Sidebar loadingState={isLoading}/>
         </SheetContent>
       </Sheet>
 
