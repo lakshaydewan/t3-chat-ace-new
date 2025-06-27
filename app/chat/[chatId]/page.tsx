@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/github.css'
+import 'highlight.js/styles/atom-one-dark.css'
 import {
     Search,
     Settings,
@@ -27,7 +27,7 @@ import { useChatStore } from "@/store/chatStore"
 import ChatCard from "@/components/chatButton"
 import { redirect, useParams } from "next/navigation"
 import { createNewMessage } from "@/app/actions/actions"
-import { Chats } from "@google/genai"
+import { Chat } from "@/lib/generated/prisma"
 
 interface Message {
     id: string
@@ -38,9 +38,23 @@ interface Message {
 
 function Sidebar() {
 
-    const { chatId } = useParams();
     const { data } = useSession();
     const { chats } = useChatStore();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredChats, setFilteredChats] = useState<Chat[]>(chats);
+
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setFilteredChats(chats)
+            return
+        }
+        const filteredChats = chats.filter((chat) => {
+            return chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+        })
+        setFilteredChats(filteredChats)
+        console.log(filteredChats)
+
+    }, [searchTerm, chats])
 
     return (
         <div className="h-full bg-[#f3e5f5] font-sans dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 flex flex-col border-r border-purple-100 dark:border-gray-700">
@@ -79,6 +93,8 @@ function Sidebar() {
             <div className="relative mb-6">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#d589b4] w-4 h-4" />
                 <input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search your threads..."
                     className="w-full pl-10 pr-4 py-2.5 ring-0 tracking-wide outline-none bg-transparent placeholder:text-[#d589b4] dark:bg-gray-800/60 border-b border-b-[#efbdeb] dark:border-b-gray-600 text-gray-700 dark:text-gray-200 text-xs"
                 />
@@ -88,13 +104,20 @@ function Sidebar() {
             <div className="flex-1">
                 <span className="text-xs text-[#4f1754] font-sans font-semibold">Chats</span>
                 {
-                    chats.map((chat) => {
+                    searchTerm.trim() !== "" ? filteredChats.map((chat) => {
                         return (
                             <div key={chat.id}>
                                 <ChatCard chat={chat} />
                             </div>
                         )
-                    })
+                    }) :
+                        chats.map((chat) => {
+                            return (
+                                <div key={chat.id}>
+                                    <ChatCard chat={chat} />
+                                </div>
+                            )
+                        })
                 }
             </div>
 
@@ -209,6 +232,7 @@ export default function ChatPage() {
             if (didRun) return
             didRun = true
             // Simulate AI response with random delay
+            setIsLoading(true)
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: {
@@ -476,7 +500,7 @@ export default function ChatPage() {
                     <div className="flex-1 overflow-y-auto px-4 lg:px-8">
                         {messages.length === 0 ? (
                             <div className="h-full font-sans flex items-center justify-center">
-                                loading chat ...
+                                <LoadingDots />
                             </div>
                         ) : (
                             /* Messages */
@@ -493,6 +517,49 @@ export default function ChatPage() {
                                                 <ReactMarkdown
                                                     remarkPlugins={[remarkGfm]}
                                                     rehypePlugins={[rehypeHighlight]}
+                                                    components={{
+                                                        code({ node, className, children, ...props }) {
+                                                            const [copied, setCopied] = useState(false);
+
+                                                            const handleCopy = async () => {
+                                                                try {
+                                                                    await navigator.clipboard.writeText(String(children));
+                                                                    setCopied(true);
+                                                                    setTimeout(() => setCopied(false), 2000);
+                                                                } catch (err) {
+                                                                    console.error('Failed to copy:', err);
+                                                                }
+                                                            };
+
+                                                            return (
+                                                                <pre className="relative rounded-xl bg-gradient-to-br from-[#1e1e1e] to-[#2a2a2a] p-4 overflow-auto text-sm text-white my-4 border border-gray-700 shadow-lg">
+                                                                    <code className={className} {...props}>
+                                                                        {children}
+                                                                    </code>
+                                                                    <button
+                                                                        onClick={handleCopy}
+                                                                        className="absolute top-3 right-3 flex items-center gap-1.5 text-xs text-gray-300 bg-gray-800/70 hover:bg-gray-700/80 border border-gray-600 px-3 py-1.5 rounded-lg transition-all duration-200 hover:text-white backdrop-blur-sm"
+                                                                    >
+                                                                        {copied ? (
+                                                                            <>
+                                                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                                </svg>
+                                                                                Copied
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                                                </svg>
+                                                                                Copy
+                                                                            </>
+                                                                        )}
+                                                                    </button>
+                                                                </pre>
+                                                            );
+                                                        }
+                                                    }}
                                                 >
                                                     {message.content}
                                                 </ReactMarkdown>

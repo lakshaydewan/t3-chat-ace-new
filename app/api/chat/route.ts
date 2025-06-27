@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
 
-        console.log(ai.models.list());
+        console.log(await ai.models.list());
 
         try {
           const result = await ai.models.generateContentStream({

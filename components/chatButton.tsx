@@ -68,11 +68,21 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
         <span
           onClick={async (e) => {
             e.stopPropagation()
-            console.log("DELETING CHAT", chat.id)
             // delete chat from zustand store
             store.deleteChat(chat.id)
             // delete chat from db
             await deleteChat(chat.id)
+            // check if deleted chat is active chat
+            if (chatId === chat.id) {
+              if (store.chats.length === 1) {
+                router.push('/')
+                return
+              }
+              const latestChat = store.chats[store.chats.length - 1]
+              if (latestChat) {
+                router.push(`/chat/${latestChat.id}`)
+              }
+            }
           }}
           className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] transition-all duration-300 ease-out flex justify-center items-center'>
           <XIcon className='size-4 rounded text-[#b7387d]' />
