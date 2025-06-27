@@ -135,7 +135,7 @@ function Sidebar({loadingState}: {loadingState: boolean}) {
             )
           }) : 
             <div className="text-center text-sm font-sans px-2 py-2 rounded-md">
-              No chats yet
+              No chats
             </div>)
         }
       </div>
