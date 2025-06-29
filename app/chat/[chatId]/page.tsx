@@ -232,7 +232,7 @@ export default function ChatPage() {
 
             if (didRun) return
             didRun = true
-            // Simulate AI response with random delay
+            
             setIsLoading(true)
             const res = await fetch("/api/chat", {
                 method: "POST",
@@ -254,7 +254,16 @@ export default function ChatPage() {
                     // save messagesJSON to Db
                     console.log("Saving messages to DB")
                     console.log(messages)
-                    await createNewMessage(messagesRef.current, chatId as string)
+                    // await createNewMessage(messagesRef.current, chatId as string)
+                    const data = await fetch("/api/new", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ message: messagesRef.current, chatId: chatId as string }),
+                    })
+                    const chat = await data.json()
+                    console.log('res from API for Initial Message creattion', chat)
                     // update zustand store with this data to avoid conflicts 
                     const updatedChatsArray = chats.map((chat) => {
                         if (chat.id === chatId) {
@@ -352,12 +361,10 @@ export default function ChatPage() {
         setInput("")
         setIsLoading(true)
 
-        // Reset textarea height
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto"
         }
 
-        // Simulate AI response with random delay
         const res = await fetch("/api/chat", {
             method: "POST",
             headers: {
@@ -384,8 +391,6 @@ export default function ChatPage() {
         while (true) {
             const { done, value } = await reader!.read()
 
-            console.log("Received chunk: ", value)
-
             if (done) {
                 // update zustand store with this data to avoid conflicts 
                 const updatedChatsArray = chats.map((chat) => {
@@ -399,7 +404,22 @@ export default function ChatPage() {
                 })
                 // @ts-expect-error my bad will fix this later :)
                 setChats(updatedChatsArray)
-                await createNewMessage(messagesRef.current, chatId as string)
+                try {
+                    const data = await fetch("/api/new", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ message: messagesRef.current, chatId: chatId as string }),
+                    })
+                    const chat = await data.json()
+                    console.log('res from API', chat)
+                } catch (error) {
+                    console.error('Error creating new chat Message:', error)
+                }
+
+
+                // await createNewMessage(messagesRef.current, chatId as string)
                 setIsLoading(false)
                 break
             }
@@ -479,7 +499,7 @@ export default function ChatPage() {
 
                     <div className="flex items-center gap-2">
                         <Button
-                            onClick={()=> {
+                            onClick={() => {
                                 router.push("/settings");
                             }}
                             variant="ghost"

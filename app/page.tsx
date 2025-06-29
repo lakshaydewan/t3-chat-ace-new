@@ -251,7 +251,15 @@ export default function ChatPage() {
     }
 
     try {
-      const chat = await createNewChat(userMessage)
+      const data = await fetch("/api", {
+        method: "POST",
+        body: JSON.stringify(userMessage),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      const chat = await data.json()
+      console.log('res from API', chat)
       setChats([chat, ...chats])
       router.push(`/chat/${chat.id}`)
     } catch (error) {

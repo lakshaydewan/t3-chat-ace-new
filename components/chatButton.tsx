@@ -58,9 +58,15 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
             console.log("EDITING CHAT", chat.id)
             setEditState(true)
             // update chat in zustand store
-            // store.renameChat(chat.id, chat.title)
-            // // update chat in db
-            // await renameChat(chat.id, chat.title)
+            store.renameChat(chat.id, chat.title)
+            // update chat in db
+            await fetch('/api/chat', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ chatId: chat.id, title: chat.title }),
+            })
           }}
           className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] dark:hover:bg-[#6d2642] transition-all duration-300 ease-out flex justify-center items-center'>
           <Edit className='size-4 rounded text-[#b7387d] dark:text-[#e7cfdd]' />
@@ -71,7 +77,15 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
             // delete chat from zustand store
             store.deleteChat(chat.id)
             // delete chat from db
-            await deleteChat(chat.id)
+            const data = await fetch('/api/chat', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ chatId: chat.id }),
+            })
+            const res = await data.json()
+            console.log('Deleted chat:', res)
             // check if deleted chat is active chat
             if (chatId === chat.id) {
               if (store.chats.length === 1) {

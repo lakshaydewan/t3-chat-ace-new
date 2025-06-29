@@ -24,12 +24,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const { prompt } = await req.json()
-    console.log("Received prompt:", prompt);
 
     const stream = new ReadableStream({
       async start(controller) {
-
-        console.log(await ai.models.list());
 
         try {
           const result = await ai.models.generateContentStream({
@@ -94,4 +91,39 @@ export async function GET() {
   })
 
   return NextResponse.json(chatsData);
+}
+
+export async function DELETE(req: NextRequest) {
+  const { chatId } = await req.json()
+  console.log('Received chatId to delete:', chatId)
+  try {
+    const chat = await prisma.chat.delete({
+      where: {
+        id: chatId
+      }
+    })
+    return NextResponse.json(chat)
+  } catch (error) {
+    console.error('Error deleting chat:', error)
+    return NextResponse.json({ error: 'Failed to delete chat' }, { status: 500 })
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  const { chatId, title } = await req.json()
+  console.log('Received chatId to update:', chatId)
+  try {
+    const chat = await prisma.chat.update({
+      where: {
+        id: chatId
+      },
+      data: {
+        title: title
+      }
+    })
+    return NextResponse.json(chat)
+  } catch (error) {
+    console.error('Error updating chat:', error)
+    return NextResponse.json({ error: 'Failed to update chat' }, { status: 500 })
+  }
 }
