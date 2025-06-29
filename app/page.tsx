@@ -55,7 +55,7 @@ interface Message {
   timestamp: Date
 }
 
-function Sidebar({loadingState}: {loadingState: boolean}) {
+function Sidebar({ loadingState }: { loadingState: boolean }) {
 
   const { data } = useSession();
   console.log(data);
@@ -77,13 +77,13 @@ function Sidebar({loadingState}: {loadingState: boolean}) {
   }, [searchTerm, chats])
 
   return (
-    <div className="h-full bg-[#f3e5f5] font-sans dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 flex flex-col border-r border-purple-100 dark:border-gray-700">
+    <div className="h-full bg-[#f3e5f5] font-sans dark:bg-[#171114] p-4 flex flex-col border-r border-purple-100 dark:border-[#312028]">
       {/* Header */}
       <div className="flex relative items-center justify-center gap-2 mb-3">
-        <div className="w-7 h-full flex justify-center items-center absolute top-0 left-1 text-[#ca0277] hover:bg-[#efbdeb] cursor-pointer rounded">
+        <div className="w-7 h-full flex justify-center items-center absolute top-0 left-1 text-[#ca0277] dark:text-[#d1bac8] dark:hover:bg-[#6d2642] hover:bg-[#efbdeb] cursor-pointer rounded">
           <PanelLeft className="w-4 h-4 box-border" />
         </div>
-        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 247.7 53" className="h-6 w-16 text-[#ca0277] box-border"><path fill="currentcolor" d="M205.6,50.3c1.9-1,3.5-2.2,4.7-3.6v4.4v0.4h0.4h7.7h0.4v-0.4V13.5v-0.4h-0.4h-7.7h-0.4v0.4v4.3
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 247.7 53" className="h-6 w-16 text-[#ca0277] dark:text-[#e2bad1] box-border"><path fill="currentcolor" d="M205.6,50.3c1.9-1,3.5-2.2,4.7-3.6v4.4v0.4h0.4h7.7h0.4v-0.4V13.5v-0.4h-0.4h-7.7h-0.4v0.4v4.3
 	c-1.2-1.4-2.8-2.6-4.6-3.5c-2.2-1.2-4.8-1.8-7.8-1.8c-3.3,0-6.3,0.8-9,2.5c-2.7,1.7-4.9,4-6.4,6.9l0,0c-1.6,3-2.4,6.4-2.4,10.2
 	c0,3.8,0.8,7.3,2.4,10.3c1.6,3,3.7,5.4,6.4,7.1c2.7,1.7,5.7,2.6,8.9,2.6C200.6,52.1,203.3,51.5,205.6,50.3z M208.7,25.7l0.3,0.5
 	c0.8,1.7,1.2,3.7,1.2,6c0,2.5-0.5,4.7-1.5,6.6c-1,1.9-2.4,3.3-4,4.2c-1.6,1-3.4,1.5-5.3,1.5c-1.9,0-3.6-0.5-5.3-1.5
@@ -103,28 +103,29 @@ function Sidebar({loadingState}: {loadingState: boolean}) {
       </div>
 
       {/* New Chat Button */}
-      <Button className="w-full mb-4 bg-[#a43e6b] hover:bg-[#a43e6b] text-white rounded-xl py-0 font-medium shadow-sm transition-all duration-200">
+      <Button onClick={() => {
+        redirect('/');
+      }} className="w-full mb-4 bg-[#a43e6b] dark:bg-[#3f1928] dark:text-[#d589b4] border border-[#a43e6b] dark:border-[#6d2643] hover:bg-[#a43e6b] text-white rounded-xl py-0 font-medium shadow-sm transition-all duration-200">
         New Chat
       </Button>
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#d589b4] w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#d589b4] dark:text-[#e6cedc] w-4 h-4" />
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search your threads..."
-          className="w-full pl-10 pr-4 py-2.5 ring-0 tracking-wide outline-none bg-transparent placeholder:text-[#d589b4] dark:bg-gray-800/60 border-b border-b-[#efbdeb] dark:border-b-gray-600 text-gray-700 dark:text-gray-200 text-xs"
+          className="w-full pl-10 pr-4 py-2.5 ring-0 tracking-wide outline-none bg-transparent placeholder:text-[#d589b4] dark:placeholder:text-[#80717a] dark:text-[#f4f3f5] border-b border-b-[#efbdeb] dark:border-b-[#312028] text-gray-700 text-xs"
         />
       </div>
 
       {/* Spacer */}
       <div className="flex-1">
-        <span className="text-xs text-[#4f1754] font-sans font-semibold">Chats</span>
-
+        <span className="text-xs text-[#4f1754] dark:text-[#b75b8c] font-sans font-semibold">Chats</span>
         {
           loadingState && <div className="animate-pulse bg-[#b7387d]/30 font-sans px-2 py-4 rounded-md my-2">
-            </div>
+          </div>
         }
         {
           !loadingState && ((filteredChats.length > 0) ? filteredChats.map((chat) => {
@@ -133,7 +134,7 @@ function Sidebar({loadingState}: {loadingState: boolean}) {
                 <ChatCard chat={chat} />
               </div>
             )
-          }) : 
+          }) :
             <div className="text-center text-sm font-sans px-2 py-2 rounded-md">
               No chats
             </div>)
@@ -141,7 +142,7 @@ function Sidebar({loadingState}: {loadingState: boolean}) {
       </div>
 
       {/* User Profile */}
-      <div className="flex items-center gap-3 p-3 bg-white/40 dark:bg-gray-800/40 rounded-xl border border-purple-50 dark:border-gray-700">
+      <div className="flex items-center gap-3 p-3 hover:bg-white/40 dark:hover:bg-[#261a22] rounded-xl">
         <Avatar className="w-10 h-10">
           {
             (
@@ -284,14 +285,14 @@ export default function ChatPage() {
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent side="left" className="p-0 w-64">
-          <Sidebar loadingState={isLoading}/>
+          <Sidebar loadingState={isLoading} />
         </SheetContent>
       </Sheet>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 dark:bg-[#231e28]">
         {/* Top Bar */}
-        <div className="flex justify-between items-center p-4 border-b border-purple-50 dark:border-gray-800">
+        <div className="flex justify-between items-center p-4">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -307,16 +308,19 @@ export default function ChatPage() {
 
           <div className="flex items-center gap-2">
             <Button
+              onClick={() => {
+                router.push("/settings");
+              }}
               variant="ghost"
               size="icon"
-              className="text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-xl"
+              className="text-gray-600 dark:hover:bg-[#2c2632] dark:text-gray-300 hover:text-[#a43e6b] hover:bg-[#f3e4f5] rounded-xl"
             >
               <Settings className="w-5 h-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-xl"
+              className="text-gray-600 dark:hover:bg-[#2c2632] dark:text-gray-300 hover:text-[#a43e6b] hover:bg-[#f3e4f5] rounded-xl"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -373,8 +377,8 @@ export default function ChatPage() {
                   <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`font-sans font-light text-sm lg:max-w-[70%] px-3 py-2 rounded-2xl transition-all duration-200 ${message.role === "user"
-                        ? "bg-[#f5dcef] max-w-[85%] text-gray-800 border border-[#efbdeb] ml-auto"
-                        : "text-gray-800 min-w-[100%]"
+                        ? "bg-[#f5dcef] max-w-[85%] text-gray-800 dark:bg-[#2c2632] dark:text-[#d3ccda] border dark:border-[#302938] border-[#efbdeb] ml-auto"
+                        : "text-gray-800 dark:text-[#d3ccda] min-w-[100%]"
                         }`}
                     >
                       <div className="text-sm lg:text-base leading-relaxed whitespace-pre-wrap">
@@ -395,9 +399,9 @@ export default function ChatPage() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 pb-0 lg:p-0 border-t border-purple-50 dark:border-gray-800">
+          <div className="p-4 pb-0 lg:p-0">
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-              <div className="relative bg-white dark:bg-gray-800 rounded-2xl border border-purple-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="relative bg-white dark:bg-[#2c2533] rounded-2xl border border-purple-100 dark:border-[#312335] shadow-sm hover:shadow-md transition-all duration-200">
                 <Textarea
                   ref={textareaRef}
                   value={input}
@@ -413,10 +417,10 @@ export default function ChatPage() {
                 <Button
                   type="submit"
                   size="icon"
-                  className="absolute right-3 bottom-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl w-10 h-10 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-3 bottom-3 border dark:border-[#4c293d] bg-[#a64470] border-[#a64470] dark:bg-[#401829] text-[#f9ebf4] dark:text-[#8d808d] rounded-xl w-10 h-10 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isLoading || !input.trim()}
                 >
-                  {isLoading ? <LoadingDots /> : <ArrowUp className="w-4 h-4" />}
+                  {isLoading ? <LoadingDots /> : <ArrowUp className="w-4 h-4 " />}
                 </Button>
 
                 {/* Bottom Controls */}

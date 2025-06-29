@@ -42,14 +42,14 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
         }
       }}
       onChange={(e: any) => setNewTitle(e.target.value)}
-      className='font-sans w-full px-2 py-2 focus:outline-none ring-0 rounded-md overflow-hidden relative group text-[#b7387d] cursor-pointer my-1 hover:bg-white font-light text-sm'>
+      className='font-sans w-full px-2 py-2 focus:outline-none dark:bg-[#261a22] ring-0 rounded-md overflow-hidden relative group text-[#b7387d] dark:text-[#e7cfdd] cursor-pointer my-1 font-light text-sm'>
     </input>
   }
 
   return (
     <div onClick={() => {
       router.push(`/chat/${chat.id}`)
-    }} className={`font-sans px-2 py-2 rounded-md overflow-hidden ${chatId === chat.id && 'bg-white'} relative group text-[#b7387d] cursor-pointer my-1 hover:bg-white font-light text-sm`}>
+    }} className={`font-sans px-2 py-2 rounded-md overflow-hidden ${chatId === chat.id && 'bg-white dark:bg-[#261a22]'} relative group dark:hover:bg-[#261a22] text-[#b7387d] dark:text-[#e7cfdd] cursor-pointer my-1 hover:bg-white font-light text-sm`}>
       {chat.title}
       <span className='absolute pr-1 rounded-md top-0 flex justify-center items-center gap-0.5 -right-[60px] group-hover:right-0 h-full w-[60px] bg-transparent transition-all duration-200 ease-out'>
         <span
@@ -62,8 +62,8 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
             // // update chat in db
             // await renameChat(chat.id, chat.title)
           }}
-          className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] transition-all duration-300 ease-out flex justify-center items-center'>
-          <Edit className='size-4 rounded text-[#b7387d]' />
+          className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] dark:hover:bg-[#6d2642] transition-all duration-300 ease-out flex justify-center items-center'>
+          <Edit className='size-4 rounded text-[#b7387d] dark:text-[#e7cfdd]' />
         </span>
         <span
           onClick={async (e) => {
@@ -84,8 +84,8 @@ const ChatCard = ({ chat }: { chat: Chat }) => {
               }
             }
           }}
-          className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] transition-all duration-300 ease-out flex justify-center items-center'>
-          <XIcon className='size-4 rounded text-[#b7387d]' />
+          className='p-1.5 z-30 cursor-pointer rounded-md hover:bg-[#f6e4f2] dark:hover:bg-[#6d2642] transition-all duration-300 ease-out flex justify-center items-center'>
+          <XIcon className='size-4 rounded text-[#b7387d] dark:text-[#e7cfdd]' />
         </span>
       </span>
     </div>
